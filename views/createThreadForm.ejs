@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>新規スレッド作成フォーム</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap-reboot.min.css">
+        <link type="text/css" rel="stylesheet" href="/css/style.css">
+    </head>
+    <body>
+        <section class="container">
+            <div class="mainTitle">
+                <h1 class="title">なんでも掲示板</h1>
+            </div>
+            <!-- ハンバーガーメニュー -->
+            <div class="hamburger-menu">
+                <input type="checkbox" id="menu-btn-check">
+                <label for="menu-btn-check" class="menu-btn"><span></span></label>
+                <!--ここからメニュー-->
+                <aside class="top-side">
+                    <div class="welcome">ようこそ<span class="roginName">ゲスト</span>さん</div>
+                    <ul>
+                        <li><a href="/createThreadForm">新規スレッドを書く</a></li>
+                        <li class="favorite"><a href="/favoriteList">お気に入り一覧</a></li>
+                        <li class="roginPage"><a href="/roginForm">ログイン</a></li>
+                        <li class="rogoutPage"><a href="/rogout">ログアウト</a></li>
+                        <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
+                        <li>
+                            <div class="qa__head js-ac">掲示板検索</div>
+                        </li>
+                        <li>
+                            <div class="searchInpt">
+                                <input id="inputTitle" type="text">
+                                <div class="searchIcon">
+                                    <img class="magnifyingGlass" src="../image/magnifyingGlass.png" alt="検索アイコン表示" width="20px" height="20px">
+                                </div>
+                            </div>
+                            <div class="add"></div>
+                        </li>
+                    </ul>
+                </aside>
+                <!--ここまでメニュー-->
+            </div>
+            <div class="formArea">
+                <h2 class="formTitle">新規スレッド作成</h2>
+                <form id="form-vali" action="/createThread" method="POST">
+                    <div>
+                        <label for="title">スレッドタイトル</label><span class="errorMsg error-title"></span><br>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div>
+                        <label for="mail">ID（メールアドレス）</label><span class="errorMsg error-mail"></span><br>
+                        <input type="text" id="mail" name="mail" required>
+                    </div>
+                    <div>
+                        <label for="password">パスワード</label><span class="errorMsg error-password"></span><br>
+                        <input type="text" id="password" name="password" maxlength="20" required>
+                    </div>
+                    <div class="formBtn"><button class="submitBtn" type="submit">作成</button></div>
+                </form>
+            </div>
+        </section>
+        <footer>
+            <div class="footerText">copy write</div>
+        </footer>
+        <script>
+            let userInfo = JSON.parse('<%= JSON.stringify(userInfo) %>'.replace(/&#34;/g, '"'));
+            let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
+            let rog = JSON.parse('<%= JSON.stringify(rog) %>'.replace(/&#34;/g, '"'));
+            let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
+
+            let title = document.querySelector('#title');
+            let mail = document.querySelector('#mail');
+            let password = document.querySelector('#password');
+            let errorTitle = document.querySelector('.error-title');
+            let errorMail = document.querySelector('.error-mail');
+            let errorPassword = document.querySelector('.error-password');
+            // バリデーションチェック
+            function validationCheck(event) {
+                //通常の動作をキャンセル
+                event.preventDefault();
+
+                if (title.value === "") {
+                    errorTitle.innerHTML = "※スレッドタイトルを入力してください";
+                    errorTitle.style.color = "red";
+                } else {
+                    errorTitle.innerHTML = "";
+                }
+                if (mail.value === "") {
+                    errorMail.innerHTML = "※メールアドレスを入力してください";
+                    errorMail.style.color = "red";
+                } else {
+                    errorMail.innerHTML = "";
+                }
+                if (password.value === "") {
+                    errorPassword.innerHTML = "※パスワードを入力してください";
+                    errorPassword.style.color = "red";
+                } else {
+                    errorPassword.innerHTML = "";
+                }
+                if (mail.value !== "" && password.value !== "") {
+                    for (i = 0; i < userInfo.length; i++) {
+                        if (mail.value !== userInfo[i].mail || password.value !== userInfo[i].password) {
+                            errorMail.innerHTML = "※IDとパスワードが一致しません";
+                            errorPassword.innerHTML = "※IDとパスワードが一致しません";
+                            errorMail.style.color = "red";
+                            errorPassword.style.color = "red";
+                        } else {
+                            errorMail.innerHTML = "";
+                            errorPassword.innerHTML = "";
+                            break;
+                        }
+                    }
+                }
+                if (errorTitle.innerHTML === "" && errorMail.innerHTML === "" && errorPassword.innerHTML === "") {
+                    formEle.submit();
+                }
+            }
+            const formEle = document.querySelector('#form-vali'); //form要素
+            const submitButton = document.querySelector('.submitBtn'); //submitボタン
+            submitButton.addEventListener('click', validationCheck);
+
+            // ハンバーガーメニュー内検索ボックスの表示
+            const qa = document.querySelector(".js-ac");
+            function acToggle() {
+                const content = document.querySelector(".searchInpt");
+                content.classList.toggle("is-open");
+                const qa = this;
+                qa.classList.toggle('is-open');
+            }
+            qa.addEventListener("click", acToggle);
+
+            // ログイン状況の確認
+            function roginNameReflection() {
+                let roginName = document.querySelector('.roginName');
+                let roginPage = document.querySelector('.roginPage');
+                let rogoutPage = document.querySelector('.rogoutPage');
+                let favorite = document.querySelector('.favorite');
+                let registerUser = document.querySelector('.registerUser');
+                
+                for (i = 0; i < rog.length; i++) {
+                    for (j = 0; j < users.length; j++) {
+                        if (rog[i].mail === users[j].mail) {
+                            roginName.innerHTML = users[j].name;
+                            roginPage.style.display = "none";
+                            registerUser.style.display = "none";
+                            rogoutPage.classList.remove("rogoutPage");
+                            favorite.classList.remove("favorite");
+                        }
+                    }
+                }
+            }
+            window.onload = roginNameReflection();
+
+            //掲示板検索
+            function searchTitle() {
+                if (inputTitle.value != "") {
+                    if (document.querySelector('.addTitles') != null) {
+                        while (add.firstChild) {
+                            add.removeChild(add.firstChild);
+                        }
+                    }
+                    for (i = 0; i < createdThreads.length; i++) {
+                        if (createdThreads[i].title.indexOf(inputTitle.value) > -1) {
+                            add.insertAdjacentHTML('beforeend', `
+                                    <div class="addTitles"> ${createdThreads[i].title} </div>
+                           `)
+                        }
+                    }
+                } else {
+                    while (add.firstChild) {
+                        add.removeChild(add.firstChild);
+                    }
+                }
+            }
+            let searchBtn = document.querySelector('.magnifyingGlass');
+            let inputTitle = document.querySelector('#inputTitle');
+            let add = document.querySelector(".add");
+            searchBtn.addEventListener('click', searchTitle);
+
+        </script>
+    </body>
+</html>

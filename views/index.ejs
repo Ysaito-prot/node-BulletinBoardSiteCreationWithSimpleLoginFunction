@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>掲示板トップ</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap-reboot.min.css">
+        <link type="text/css" rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <section class="container">
+            <div class="mainTitle">
+                <h1 class="title">なんでも掲示板</h1>
+            </div>
+            <!-- ハンバーガーメニュー -->
+            <div class="hamburger-menu">
+                <input type="checkbox" id="menu-btn-check">
+                <label for="menu-btn-check" class="menu-btn"><span></span></label>
+                <!--ここからメニュー-->
+                <aside class="top-side">
+                    <div class="welcome">ようこそ<span class="roginName">ゲスト</span>さん</div>
+                    <ul>
+                        <li><a href="/createThreadForm">新規スレッドを書く</a></li>
+                        <li class="favorite"><a href="/favoriteList">お気に入り一覧</a></li>
+                        <li class="roginPage"><a href="/roginForm">ログイン</a></li>
+                        <li class="rogoutPage"><a href="/rogout">ログアウト</a></li>
+                        <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
+                        <li>
+                            <div class="qa__head js-ac">掲示板検索</div>
+                        </li>
+                        <li>
+                            <div class="searchInpt">
+                                <input id="inputTitle" type="text">
+                                <div class="searchIcon">
+                                    <img class="magnifyingGlass" src="../image/magnifyingGlass.png" alt="検索アイコン表示" width="20px" height="20px">
+                                </div>
+                            </div>
+                            <div class="add"></div>
+                        </li>
+                    </ul>
+                </aside>
+                <!--ここまでメニュー-->
+            </div>
+            <div class="newThread">
+                <div class="btn"><button class="createBtn"><a href="/createThreadForm">新規スレッドを書く</a></button></div>
+            </div>
+            <div class="threadList">
+                <% createdThreads.forEach(function (thread) { %>
+                    <span class="threadItem">
+                        <a href="/readAll/<%= thread.id %>"><%= thread.id %>.<%= thread.title %>(レス数)</a>
+                    </span>
+                    <% }); %>
+            </div>
+            <div class="threadArea">
+                <ul class="threadContentArea">
+                    <% threads.forEach(function (value) { %>
+                        <li class="listItem">
+                            <div class="userInfo">
+                                <span class="userName">
+                                    <%= value.id %> 名前：<%= value.name %>
+                                </span>
+                                <span class="date">：<%= value.date %> </span>
+                                <span class="edit"><a href="/edit/<%= value.id %>">編集</a></span>
+                            </div>
+                            <div class="content">
+                                <%= value.content %>
+                            </div>
+                        </li>
+                        <% }); %>
+                </ul>
+                <div class="underMenu">
+                    <div class="createComment">書き込む</div>
+                    <div class="favo"><a href="/edit">お気に入り（ふぁぼ数）</a></div>
+                    <div><a href="/edit">全部読む（レス数）</a></div>
+                </div>
+                <form id="commentForm-vali" class="is-open" action="/comment" method="POST" name="questionnaire">
+                    <div class="inputTitle hidden">
+                        <div class="item"><label for="date">投稿日時</label> </div>
+                        <input id="date" type="text" name="date">
+                    </div>
+                    <div class="inputDate hidden">
+                        <div class="item"><label for="title">スレッドタイトル</label> </div>
+                        <input id="title" type="text" name="title" value="<%= threads[0].title %>">
+                    </div>
+                    <div class="nameEmail">
+                        <div class="inputName">
+                            <div class="item"><label for="name">名前</label><span class="errorMsg error-name"></span> </div>
+                            <input id="name" type="text" name="name" pattern="^[ぁ-ん一-龥々a-zA-Z\-]+$">
+                        </div>
+                        <div class="inputEmail">
+                            <div class="item"><label for="mail">email</label><span class="errorMsg error-mail"></span> </div>
+                            <input id="mail" type="text" name="mail" pattern="^[ぁ-ん一-龥々a-zA-Z\-]+$">
+                        </div>
+                    </div>
+                    <div class="error-content"></div>
+                    <textarea id="content" name="content" cols="135" rows="6"></textarea>
+                    <div class="writeBtn"><button class="submitBtn" type="submit">書き込む</button></div>
+                </form>
+            </div>
+            <div class="pageNation">ページネーションが入ります</div>
+        </section>
+        <footer>
+            <div class="footerText">copy write</div>
+        </footer>
+        <script>
+            let threads = JSON.parse('<%= JSON.stringify(threads) %>'.replace(/&#34;/g, '"'));
+            let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
+            let rog = JSON.parse('<%= JSON.stringify(rog) %>'.replace(/&#34;/g, '"'));
+            let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
+            console.log(threads)
+            console.log(users)
+            console.log(rog)
+            console.log(createdThreads)
+
+            // ハンバーガーメニュー内検索ボックスの表示
+            const qa = document.querySelector(".js-ac");
+            function acToggle() {
+                const content = document.querySelector(".searchInpt");
+                content.classList.toggle("is-open");
+                const qa = this;
+                qa.classList.toggle('is-open');
+            }
+            qa.addEventListener("click", acToggle);
+
+            // 現在日時を取得・フォームへ自動入力
+            function getNow() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const mon = now.getMonth() + 1;
+                const day = now.getDate();
+                const week = now.getDay();
+                const hour = now.getHours();
+                const min = now.getMinutes();
+                const sec = now.getSeconds();
+                const dayWeek = new Array("日", "月", "火", "水", "木", "金", "土");
+                const currentTime = year + "/" + mon + "/" + day + "(" + dayWeek[week] + ") " + hour + ":" + min + ":" + sec;
+                let date = document.querySelector('#date');
+                date.value = currentTime;
+            }
+
+            let name = document.querySelector('#name');
+            let mail = document.querySelector('#mail');
+            let content = document.querySelector('#content');
+            let errorName = document.querySelector('.error-name');
+            let errorMail = document.querySelector('.error-mail');
+            let errorContent = document.querySelector('.error-content');
+            // バリデーションチェック
+            function validationCheck(event) {
+                //通常の動作をキャンセル
+                event.preventDefault();
+
+                if (name.value === "") {
+                    errorName.innerHTML = "※ユーザー名を入力してください";
+                    errorName.style.color = "red";
+                } else {
+                    errorName.innerHTML = "";
+                }
+                if (mail.value === "") {
+                    errorMail.innerHTML = "※メールアドレスを入力してください";
+                    errorMail.style.color = "red";
+                } else {
+                    errorMail.innerHTML = "";
+                }
+                if (content.value === "") {
+                    errorContent.innerHTML = "※コメントを入力してください";
+                    errorContent.style.color = "red";
+                } else {
+                    errorContent.innerHTML = "";
+                }
+                if (errorName.innerHTML === "" && errorMail.innerHTML === "" && errorContent.innerHTML === "") {
+                    getNow();
+                    formEle.submit();
+                }
+            }
+            const formEle = document.querySelector('#commentForm-vali'); //form要素
+            const submitButton = document.querySelector('.submitBtn'); //submitボタン
+            submitButton.addEventListener('click', validationCheck);
+
+            // コメント作成フォームの表示
+            const createComment = document.querySelector(".createComment");
+            function commentToggle() {
+                formEle.classList.toggle("is-open");
+                const createComment = this;
+                createComment.classList.toggle('is-open');
+            }
+            createComment.addEventListener("click", commentToggle);
+
+            // ログイン状況の確認
+            function roginNameReflection() {
+                let roginName = document.querySelector('.roginName');
+                let roginPage = document.querySelector('.roginPage');
+                let rogoutPage = document.querySelector('.rogoutPage');
+                let favorite = document.querySelector('.favorite');
+                let registerUser = document.querySelector('.registerUser');
+                let favo = document.querySelector('.favo');
+
+                for (i = 0; i < rog.length; i++) {
+                    for (j = 0; j < users.length; j++) {
+                        if (rog[i].mail === users[j].mail) {
+                            roginName.innerHTML = users[j].name;
+                            roginPage.style.display = "none";
+                            registerUser.style.display = "none";
+                            rogoutPage.classList.remove("rogoutPage");
+                            favorite.classList.remove("favorite");
+                            // コメント作成フォームへ自動入力
+                            name.value = users[j].name;
+                            mail.value = users[j].mail;
+                            // お気に入りリンク有効化
+                            favo.classList.remove("favo");
+                            break;
+                        }
+                    }
+                }
+            }
+            window.onload = roginNameReflection();
+
+            //掲示板検索
+            function searchTitle() {
+                if (inputTitle.value != "") {
+                    if (document.querySelector('.addTitles') != null) {
+                        while (add.firstChild) {
+                            add.removeChild(add.firstChild);
+                        }
+                    }
+                    for (i = 0; i < createdThreads.length; i++) {
+                        if (createdThreads[i].title.indexOf(inputTitle.value) > -1) {
+                            add.insertAdjacentHTML('beforeend', `
+                                    <div class="addTitles"> ${createdThreads[i].title} </div>
+                           `)
+                        }
+                    }
+                } else {
+                    while (add.firstChild) {
+                        add.removeChild(add.firstChild);
+                    }
+                }
+            }
+            let searchBtn = document.querySelector('.magnifyingGlass');
+            let inputTitle = document.querySelector('#inputTitle');
+            let add = document.querySelector(".add");
+            searchBtn.addEventListener('click', searchTitle);
+
+        </script>
+    </body>
+</html>
