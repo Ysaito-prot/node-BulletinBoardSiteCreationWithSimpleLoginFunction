@@ -2,13 +2,13 @@
 <html lang="ja">
     <head>
         <meta charset="UTF-8">
-        <title>掲示板トップ</title>
+        <title>お気に入り一覧ページ</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap-reboot.min.css">
         <link type="text/css" rel="stylesheet" href="css/style.css">
     </head>
     <body>
         <section class="container">
-            <div class="mainTitle">
+            <div class="mainTitle favoPage">
                 <h1 class="title"><a href="/">なんでも掲示板</a></h1>
             </div>
             <!-- ハンバーガーメニュー -->
@@ -40,54 +40,15 @@
                 </aside>
                 <!--ここまでメニュー-->
             </div>
-            <div class="newThread">
-                <div class="btn"><button class="createBtn"><a href="/createThreadForm">新規スレッドを書く</a></button></div>
-            </div>
+            <h2 class="roginUserDisplay"><span class="roginUserName">ログインユーザー</span>さんのお気に入りスレッド一覧</h2>
             <div class="threadList">
-                <% createdThreads.forEach(function (thread) { %>
-                    <span class="threadItem">
-                        <a href="/readAll/<%= thread.title %>"><%= thread.id %>.<%= thread.title %>(レス数)</a>
-                    </span>
-                    <% }); %>
             </div>
             <div class="threadArea">
-                <h2><%= createdThreads[0].id %><span class="threadTitle"><%= createdThreads[0].title %></span></h2>
-                <ul class="threadContentArea">
-                    <% threads.forEach(function (value) { %>
-                        <li class="listItem">
-                            <div class="userInfo">
-                                <span class="userName">
-                                    <%= value.id %> 名前：<%= value.name %>
-                                </span>
-                                <span class="date">：<%= value.date %> </span>
-                                <span class="edit"><a href="/edit/<%= value.id %>">編集</a></span>
-                            </div>
-                            <div class="content">
-                                <%= value.content %>
-                            </div>
-                        </li>
-                        <% }); %>
-                </ul>
+                <ul class="threadContentArea"></ul>
                 <div class="underMenu">
                     <div class="createComment">書き込む</div>
-                    <div class="favo">
-                        <div class="favoBtn">お気に入り（ふぁぼ数）</div>
-                        <form id="favoForm" class="hidden" action="/addFavo" method="POST">
-                            <div class="inputEmail">
-                                <div class="item"><label for="autoMail">email</label><span class="errorMsg error-mail"></span> </div>
-                                <input id="autoMail" type="text" name="mail">
-                            </div>
-                            <div class="inputThreadId">
-                                <div class="item"><label for="threadId">スレッドID</label> </div>
-                                <input id="threadId" type="text" name="threadId" value="<%= createdThreads[0].id %>">
-                            </div>
-                            <div class="inputTitle">
-                                <div class="item"><label for="title">スレッドタイトル</label> </div>
-                                <input id="title" type="text" name="title" value="<%= createdThreads[0].title %>">
-                            </div>
-                        </form>
-                    </div>
-                    <div><a href="/readAll">全部読む（レス数）</a></div>
+                    <div class="favo"><div class="favoBtn">お気に入り（ふぁぼ数）</div></div>
+                    <div><a href="/edit">全部読む（レス数）</a></div>
                 </div>
                 <form id="commentForm-vali" class="is-open" action="/comment" method="POST" name="questionnaire">
                     <div class="inputTitle hidden">
@@ -96,7 +57,7 @@
                     </div>
                     <div class="inputDate hidden">
                         <div class="item"><label for="title">スレッドタイトル</label> </div>
-                        <input id="title" type="text" name="title" value="<%= createdThreads[0].title %>">
+                        <input id="title" type="text" name="title" value="<%= threads[0].title %>">
                     </div>
                     <div class="nameEmail">
                         <div class="inputName">
@@ -123,6 +84,7 @@
             let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
             let rog = JSON.parse('<%= JSON.stringify(rog) %>'.replace(/&#34;/g, '"'));
             let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
+            let favoThreads = JSON.parse('<%= JSON.stringify(favoThreads) %>'.replace(/&#34;/g, '"'));
             console.log(threads)
             console.log(users)
             console.log(rog)
@@ -160,7 +122,6 @@
             let errorName = document.querySelector('.error-name');
             let errorMail = document.querySelector('.error-mail');
             let errorContent = document.querySelector('.error-content');
-            let autoMail = document.querySelector('#autoMail');
             // バリデーションチェック
             function validationCheck(event) {
                 //通常の動作をキャンセル
@@ -210,11 +171,13 @@
                 let favorite = document.querySelector('.favorite');
                 let registerUser = document.querySelector('.registerUser');
                 let favo = document.querySelector('.favo');
+                let roginUserName = document.querySelector('.roginUserName');
 
                 for (i = 0; i < rog.length; i++) {
                     for (j = 0; j < users.length; j++) {
                         if (rog[i].mail === users[j].mail) {
                             roginName.innerHTML = users[j].name;
+                            roginUserName.innerHTML = users[j].name;
                             roginPage.style.display = "none";
                             registerUser.style.display = "none";
                             rogoutPage.classList.remove("rogoutPage");
@@ -222,9 +185,47 @@
                             // コメント作成フォームへ自動入力
                             name.value = users[j].name;
                             mail.value = users[j].mail;
-                            autoMail.value = users[j].mail;
                             // お気に入りリンク有効化
                             favo.classList.remove("favo");
+
+                            // お気に入り登録したスレッドを表示
+                            let threadList = document.querySelector('.threadList');
+
+                            // ログインユーザーのお気に入り登録データを抽出
+                            let addFavoThread = [];
+                            for (k = 0; k < favoThreads.length; k++) {
+                                if (favoThreads[k].mail === users[j].mail) {
+                                    addFavoThread.push(favoThreads[k]);
+                                }
+                            }
+                            addFavoThread.sort(compareFunc);
+                            console.log(addFavoThread)
+                            for (i = 0; i < addFavoThread.length; i++) {
+                                threadList.insertAdjacentHTML('beforeend', `
+                        <span class="threadItem">
+            <a href="/readAll/${addFavoThread[i].title}">${addFavoThread[i].threadId}.${addFavoThread[i].title}(レス数)</a>
+        </span>
+               `)
+                            }
+                            let threadContentArea = document.querySelector('.threadContentArea');
+                            for (i = 0; i < threads.length; i++) {
+                                if (addFavoThread[0].title === threads[i].title) {
+                                    threadContentArea.insertAdjacentHTML('beforeend', `
+                                    <li class="listItem">
+                            <div class="userInfo">
+                                <span class="userName">
+                                    ${threads[i].id} 名前：${threads[i].name}
+                                </span>
+                                <span class="date">：${threads[i].date} </span>
+                                <span class="edit"><a href="/edit/${threads[i].id}">編集</a></span>
+                            </div>
+                            <div class="content">
+                                ${threads[i].content}
+                            </div>
+                        </li>
+               `)
+                                }
+                            }
                             break;
                         }
                     }
@@ -257,6 +258,11 @@
             let inputTitle = document.querySelector('#inputTitle');
             let add = document.querySelector(".add");
             searchBtn.addEventListener('click', searchTitle);
+
+            // 並び替え(昇順)関数
+            function compareFunc(a, b) {
+                return a.threadId - b.threadId;
+            }
 
         </script>
     </body>

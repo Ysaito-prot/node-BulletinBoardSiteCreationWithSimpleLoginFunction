@@ -9,7 +9,7 @@
     <body>
         <section class="container">
             <div class="mainTitle">
-                <h1 class="title">なんでも掲示板</h1>
+                <h1 class="title"><a href="/">なんでも掲示板</a></h1>
             </div>
             <!-- ハンバーガーメニュー -->
             <div class="hamburger-menu">
@@ -40,7 +40,7 @@
                 </aside>
                 <!--ここまでメニュー-->
             </div>
-            <div class="threadArea">
+            <div class="editArea">
                 <ul class="threadContentArea">
                         <li class="listItem">
                             <div class="userInfo">
@@ -55,7 +55,7 @@
                             </div>
                         </li>
                 </ul>
-                <form action="/update/<%= user[0].id %>" method="POST" name="questionnaire">
+                <form class="editForm" action="/update/<%= user[0].id %>" method="POST" name="questionnaire">
                     <div class="nameEmail">
                         <div class="inputName">
                             <div class="item"><label for="name">名前</label> </div>
@@ -63,11 +63,14 @@
                         </div>
                         <div class="inputEmail">
                             <div class="item"><label for="mail">email</label> </div>
-                            <input id="mail" type="text" name="mail" pattern="^[ぁ-ん一-龥々a-zA-Z\-]+$" value="<%= user[0].mail %>" required>
+                            <input id="mail" type="text" name="mail" value="<%= user[0].mail %>" required>
                         </div>
                     </div>
-                    <textarea name="content" cols="135" rows="6" required><%= user[0].content %></textarea>
-                    <div class="writeBtn"><button type="submit" onclick="validationCheck();">書き込む</button></div>
+                    <textarea id="content" name="content" cols="135" rows="6" required><%= user[0].content %></textarea>
+                    <div class="underSet">
+                        <div class="deleteComment"><a href="/deleteComment/<%= user[0].id %>">投稿を削除する</a></div>
+                        <div class="writeBtn"><button type="submit" onclick="validationCheck();">書き込む</button></div>
+                    </div>
                 </form>
             </div>
         </section>

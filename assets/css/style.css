@@ -24,6 +24,11 @@ h1 {
   font-size: 25px;
 }
 
+.title a {
+  color: #000;
+  text-decoration: none;
+}
+
 li {
   list-style: none;
 }
@@ -90,6 +95,10 @@ button a {
   pointer-events: none;
 }
 
+.favoBtn {
+  color: #007bff;
+}
+
 .underMenu {
   width: 450px;
   display: flex;
@@ -113,6 +122,10 @@ footer {
   text-align: center;
 }
 
+.threadTitle {
+  margin-left: 20px;
+}
+
 /*-------------------------
   スレッド追加フォーム
 -------------------------*/
@@ -134,7 +147,7 @@ button {
   height: 100px;
 }
 
-.writeBtn {
+#commentForm-vali .writeBtn {
   width: 180px;
   margin: 20px 0 0 auto;
 }
@@ -177,7 +190,7 @@ button {
 .roginName {
   margin-left: 20px;
 }
-.rogoutPage{
+.rogoutPage {
   display: none;
 }
 .favorite {
@@ -369,4 +382,49 @@ button {
 .rogout + .topPageJmp {
   width: 144px;
   margin: 0 auto 330px;
+}
+
+/*-------------------------
+  編集ページ
+-------------------------*/
+.editArea {
+  padding: 30px;
+  background-color: #ccc;
+  margin-bottom: 50px;
+}
+.underSet {
+  width: 320px;
+  margin: 20px 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.deleteComment {
+  padding: 10px 0;
+}
+
+.deleteComment a {
+  height: 30px;
+}
+
+/*-------------------------
+  お気に入り一覧ページ
+-------------------------*/
+.favoPage {
+  width: 650px;
+  margin: 20px auto 0;
+}
+.roginUserDisplay {
+  margin: 30px 0;
+  text-align: center;
+}
+
+/*-------------------------
+  全部読むページ
+-------------------------*/
+.underMenu.readAll {
+  width: 280px;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 0 auto;
 }

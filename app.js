@@ -89,6 +89,17 @@ app.post("/createThread", (req, res) => {
   });
 });
 
+// お気に入り登録
+app.post("/addFavo", (req, res) => {
+  const sql = "INSERT INTO favo SET ?";
+
+  con.query(sql, req.body, function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
+    res.redirect("/favoriteList");
+  });
+});
+
 app.get("/createNewThread", (req, res) => {
   res.sendFile(path.join(__dirname, "html/createThreadForm.html"));
 });
@@ -166,6 +177,53 @@ app.get("/createThreadForm", (req, res) => {
   });
 });
 
+app.get("/favoriteList", (req, res) => {
+  const threads = "SELECT * from threadInfo;";
+  const users = "SELECT * from userInfo;";
+  const rog = "SELECT * from rogin;";
+  const createdThreads = "SELECT * from createdThreads;";
+  const favoThreads = "SELECT * from favo;";
+
+  con.query(threads + users + rog + createdThreads + favoThreads, function (err, result, fields) {
+    if (err) throw err;
+    res.render("favoriteList", {
+      threads: result[0],
+      users: result[1],
+      rog: result[2],
+      createdThreads: result[3],
+      favoThreads: result[4],
+    });
+  });
+});
+
+app.get("/readAll/:title", (req, res) => {
+  const threads = "SELECT * from threadInfo;";
+  const users = "SELECT * from userInfo;";
+  const rog = "SELECT * from rogin;";
+  const createdThreads = "SELECT * from createdThreads;";
+  const target = "SELECT * FROM threadinfo WHERE title = ?;";
+  // 2番目~5番目までのデータ取得
+  const targets = "SELECT * FROM threadinfo WHERE title = ? limit 1,4;";
+  // 対象のスレッドを取得
+  const targetTitle = "SELECT * FROM createdThreads WHERE title = ?;";
+  // お気に入り登録データ取得
+  const favoThreads = "SELECT * from favo;";
+
+  con.query(threads + users + rog + createdThreads + target + targets + targetTitle + favoThreads, [req.params.title,req.params.title,req.params.title], function (err, result, fields) {
+    if (err) throw err;
+    res.render("readAll", {
+      threads: result[0],
+      users: result[1],
+      rog: result[2],
+      createdThreads: result[3],
+      target: result[4],
+      targets: result[5],
+      targetTitle: result[6],
+      favoThreads: result[7],
+    });
+  });
+});
+
 app.get("/edit/:id", (req, res) => {
   const sql = "SELECT * FROM threadInfo WHERE id = ?;";
   const users = "SELECT * from userInfo;";
@@ -201,6 +259,16 @@ app.get("/rogout", (req, res) => {
     if (err) throw err;
     console.log(result);
     res.redirect("/rogoutPage");
+  });
+});
+
+// 投稿を削除する
+app.get("/deleteComment/:id", (req, res) => {
+  const sql = "DELETE FROM threadInfo WHERE id = ?";
+  con.query(sql, [req.params.id], function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
+    res.redirect("/");
   });
 });
 
