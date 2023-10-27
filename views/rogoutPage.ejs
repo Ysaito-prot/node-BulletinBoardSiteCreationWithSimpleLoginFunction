@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>ログアウト完了</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap-reboot.min.css">
+        <link type="text/css" rel="stylesheet" href="/css/style.css">
+    </head>
+    <body>
+        <section class="container">
+            <div class="mainTitle">
+                <h1 class="title"><a href="/">なんでも掲示板</a></h1>
+            </div>
+            <!-- ハンバーガーメニュー -->
+            <div class="hamburger-menu">
+                <input type="checkbox" id="menu-btn-check">
+                <label for="menu-btn-check" class="menu-btn"><span></span></label>
+                <!--ここからメニュー-->
+                <aside class="top-side">
+                    <div class="welcome">ようこそ<span class="roginName">ゲスト</span>さん</div>
+                    <ul>
+                        <li><a href="/createThreadForm">新規スレッドを書く</a></li>
+                        <li class="roginPage"><a href="/roginForm">ログイン</a></li>
+                        <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
+                        <li>
+                            <div class="qa__head js-ac">掲示板検索</div>
+                        </li>
+                        <li>
+                            <div class="searchInpt">
+                                <input id="inputTitle" type="text">
+                                <div class="searchIcon">
+                                    <div class="magnifyingGlass"></div>
+                                </div>
+                            </div>
+                            <div class="add"></div>
+                        </li>
+                    </ul>
+                </aside>
+                <!--ここまでメニュー-->
+            </div>
+            <div class="rogout">
+                ログアウトしました。<br>
+            </div>
+            <div class="topPageJmp"><a href="/">掲示板トップへ戻る</a></div>
+        </section>
+        <footer>
+            <div class="footerText">copy write</div>
+        </footer>
+        <script>
+            let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
+
+            // ハンバーガーメニュー内検索ボックスの表示
+            const qa = document.querySelector(".js-ac");
+            function acToggle() {
+                const content = document.querySelector(".searchInpt");
+                content.classList.toggle("is-open");
+                const qa = this;
+                qa.classList.toggle('is-open');
+            }
+            qa.addEventListener("click", acToggle);
+
+            //掲示板検索
+            function searchTitle() {
+                if (inputTitle.value != "") {
+                    if (document.querySelector('.addTitles') != null) {
+                        while (add.firstChild) {
+                            add.removeChild(add.firstChild);
+                        }
+                    }
+                    for (i = 0; i < createdThreads.length; i++) {
+                        if (createdThreads[i].title.indexOf(inputTitle.value) > -1) {
+                            add.insertAdjacentHTML('beforeend', `
+                                    <div class="addTitles"> ${createdThreads[i].title} </div>
+                           `)
+                        }
+                    }
+                } else {
+                    while (add.firstChild) {
+                        add.removeChild(add.firstChild);
+                    }
+                }
+            }
+            let searchBtn = document.querySelector('.magnifyingGlass');
+            let inputTitle = document.querySelector('#inputTitle');
+            let add = document.querySelector(".add");
+            searchBtn.addEventListener('click', searchTitle);
+        </script>
+    </body>
+</html>

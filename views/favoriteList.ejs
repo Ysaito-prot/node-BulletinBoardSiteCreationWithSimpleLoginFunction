@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>お気に入り一覧ページ</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap-reboot.min.css">
+        <link type="text/css" rel="stylesheet" href="/css/style.css">
+    </head>
+    <body>
+        <section class="container">
+            <div class="mainTitle favoPage">
+                <h1 class="title"><a href="/">なんでも掲示板</a></h1>
+            </div>
+            <!-- ハンバーガーメニュー -->
+            <div class="hamburger-menu">
+                <input type="checkbox" id="menu-btn-check">
+                <label for="menu-btn-check" class="menu-btn"><span></span></label>
+                <!--ここからメニュー-->
+                <aside class="top-side">
+                    <div class="welcome">ようこそ<span class="roginName">
+                            <%= rog[0].name %>
+                        </span>さん</div>
+                    <ul>
+                        <li><a href="/createThreadForm">新規スレッドを書く</a></li>
+                        <% if(favoThreads.findIndex(item => item.mail === rog[0].mail) != -1){ %>
+                            <% for(let i = 0; i < favoThreads.length; i++){ if(rog[0].name === favoThreads[i].name ){ %>
+                                <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[i].threadId %>">お気に入り一覧</a></li>
+                                <% break;}}} else { %>
+                                    <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/1">お気に入り一覧</a></li>
+                                    <% } %>
+                        <li class="roginPage"><a href="/roginForm">ログイン</a></li>
+                        <li class="rogoutPage"><a href="/rogout">ログアウト</a></li>
+                        <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
+                        <li>
+                            <div class="qa__head js-ac">掲示板検索</div>
+                        </li>
+                        <li>
+                            <div class="searchInpt">
+                                <input id="inputTitle" type="text">
+                                <div class="searchIcon">
+                                    <div class="magnifyingGlass"></div>
+                                </div>
+                            </div>
+                            <div class="add"></div>
+                        </li>
+                    </ul>
+                </aside>
+                <!--ここまでメニュー-->
+            </div>
+            <h2 class="roginUserDisplay"><%= rog[0].name %>さんのお気に入りスレッド一覧</h2>
+            <div class="threadList">
+                <% if(favoThreads.length !=0){ favoThreads.forEach(function (thread) { %>
+                    <% if(resCount.findIndex(item => item.threadId === thread.threadId) != -1){ %>
+                        <span class="threadItem">
+                            <% for(let i = 0; i < resCount.length; i++){ if(resCount[i].threadId === thread.threadId){ %>
+                                <a href="/readAll/<%= thread.title %>"><%= thread.threadId %>.<%= thread.title %><span class="resNum">(<%= resCount[i]['count(threadId)'] %>件)</span></a>                                
+                                    <% }} %>
+                        </span>
+                        <% } else { %>
+                            <a href="/readAll/<%= thread.title %>"><%= thread.threadId %>.<%= thread.title %><span class="resNum">(0件)</span></a>    
+                        <% }; %>
+                    <% });} else { %>
+                        <span>現在お気に入り登録しているスレッドはありません</span>
+                        <% } %>
+            </div>
+            <div class="threadArea">
+                <% if(favoThreads.length !=0){ %>
+                    <h2><%= targetThread[0].id %><span class="threadTitle"><%= targetThread[0].title %></span></h2>
+                    <% if(targetThreadsRes.length !=0){ %>
+                        <ul class="threadContentArea">
+                            <li class="listItem">
+                                <div class="userInfo">
+                                    <span class="userName">
+                                        <%= targetThreadsRes[0].resId %> 名前：<%= targetThreadsRes[0].name %>
+                                    </span>
+                                    <span class="date">：<%= targetThreadsRes[0].date %> </span>
+                                    <span class="edit"><a href="/edit/<%= targetThreadsRes[0].id %>">編集</a></span>
+                                </div>
+                                <div class="content">
+                                    <%= targetThreadsRes[0].content %>
+                                </div>
+                            </li>
+                            <% if(targetThreadsRes.length>= 4){targetThreadsResLatest4.forEach(function (value) { %> <li class="listItem">
+                                    <div class="userInfo">
+                                        <span class="userName">
+                                            <%= value.resId %> 名前：<%= value.name %>
+                                        </span>
+                                        <span class="date">：<%= value.date %> </span>
+                                        <span class="edit"><a href="/edit/<%= value.id %>">編集</a></span>
+                                    </div>
+                                    <div class="content">
+                                        <%= value.content %>
+                                    </div>
+                                </li>
+                                <% })}; %>
+                                    <% if(targetThreadsRes.length < 4){targetThreadsResLatest4s.forEach(function (value) { %>
+                                        <li class="listItem">
+                                            <div class="userInfo">
+                                                <span class="userName">
+                                                    <%= value.resId %> 名前：<%= value.name %>
+                                                </span>
+                                                <span class="date">：<%= value.date %> </span>
+                                                <span class="edit"><a href="/edit/<%= value.id %>">編集</a></span>
+                                            </div>
+                                            <div class="content">
+                                                <%= value.content %>
+                                            </div>
+                                        </li>
+                                        <% })}; %>
+                        </ul>
+                        <% } %>
+                        <div class="underMenuFavo">
+                            <div class="createComment">書き込む</div>
+                            <div class="favo">
+                                <div class="favoBtn">お気に入り登録済み</div>
+                            </div>
+                            <% for(let i = 0; i < resCount.length; i++){ if(resCount[i].threadId === targetThread[0].id){ %>
+                            <div><a href="/readAll/<%= targetThread[0].title %>">全部読む（<%= resCount[i]['count(threadId)'] %>件）</a></div>
+                            <% }}; %>
+                        </div>
+                        <form id="commentForm-vali" class="is-open" action="/comment/<%= targetThread[0].title %>" method="POST" name="questionnaire">
+                            <div class="inputTitle hidden">
+                                <div class="item"><label for="date">投稿日時</label> </div>
+                                <input id="date" type="text" name="date">
+                            </div>
+                            <div class="inputDate hidden">
+                                <div class="item"><label for="title">スレッドタイトル</label> </div>
+                                <input id="title" type="text" name="title" value="<%= targetThread[0].title %>">
+                            </div>
+                            <div class="inputThreadId hidden">
+                                <div class="item"><label for="autoThreadId">スレッドID</label> </div>
+                                <input id="autoThreadId" type="text" name="threadId" value="<%= targetThread[0].id %>">
+                            </div>
+                            <div class="inputResId hidden">
+                                <div class="item"><label for="autoResId">レスID</label> </div>
+                                <input id="autoResId" type="text" name="resId">
+                            </div>
+                            <div class="nameEmail">
+                                <div class="inputName">
+                                    <div class="item"><label for="name">名前</label><span class="errorMsg error-name"></span> </div>
+                                    <input id="name" type="text" name="name" pattern="^[ぁ-ん一-龥々a-zA-Z\-]+$">
+                                </div>
+                                <div class="inputEmail">
+                                    <div class="item"><label for="mail">email</label><span class="errorMsg error-mail"></span> </div>
+                                    <input id="mail" type="text" name="mail" pattern="^[ぁ-ん一-龥々a-zA-Z\-]+$">
+                                </div>
+                            </div>
+                            <div class="error-content"></div>
+                            <textarea id="content" name="content" cols="135" rows="6"></textarea>
+                            <div class="writeBtn"><button class="submitBtn" type="submit">書き込む</button></div>
+                        </form>
+                            <% } else { %>
+                                <div class="noContent"></div>
+                                <% } %>
+            </div>
+            <div class="pageNation">
+                <% if (favoThreads.length>= 2) { %> <% if (pagination.current==1) { %>
+                        <span class="prev">前へ</span>
+                        <% } else if (pagination.current==pagination.max) { %>
+                            <span class="prev"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[pagination.current - 2].threadId %>/<%= pagination.current - 1 %>">前へ</a></span>
+                            <% } else { %>
+                                <span class="prev"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[pagination.current - 2].threadId %>/<%= pagination.current - 1 %>">前へ</a></span>
+                                <% }} %>
+                                    <% if (favoThreads.length !=0) { %>
+                                        <ul class="pagination">
+                                            <% for (var i=1; i <=pagination.max; i++) {%>
+                                                <% if (i !==pagination.current) {%>
+                                                    <li><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[i-1].threadId %>/<%= i %>"><%= i %></a></li>
+                                                    <% } else {%>
+                                                        <li>
+                                                            <%= i %>
+                                                        </li>
+                                                        <% }}%>
+                                        </ul>
+                                        <% }%>
+                                            <% if (favoThreads.length>= 2) { %> <% if (pagination.current==1) { %>
+                                                    <span class="next"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[pagination.current].threadId %>/<%= pagination.current + 1 %>">次へ</a></span>
+                                                    <% } else if (pagination.current==pagination.max) { %>
+                                                        <span class="next">次へ</span>
+                                                        <% } else { %>
+                                                            <span class="next"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[pagination.current].threadId %>/<%= pagination.current + 1 %>">次へ</a></span>
+                                                            <% }} %>
+            </div>
+        </section>
+        <footer>
+            <div class="footerText">copy write</div>
+        </footer>
+        <script>
+            let threads = JSON.parse('<%= JSON.stringify(threads) %>'.replace(/&#34;/g, '"'));
+            let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
+            let rog = JSON.parse('<%= JSON.stringify(rog) %>'.replace(/&#34;/g, '"'));
+            let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
+            let favoThreads = JSON.parse('<%= JSON.stringify(favoThreads) %>'.replace(/&#34;/g, '"'));
+            let targetThreadsRes = JSON.parse('<%= JSON.stringify(targetThreadsRes) %>'.replace(/&#34;/g, '"'));
+
+            // ハンバーガーメニュー内検索ボックスの表示
+            const qa = document.querySelector(".js-ac");
+            function acToggle() {
+                const content = document.querySelector(".searchInpt");
+                content.classList.toggle("is-open");
+                const qa = this;
+                qa.classList.toggle('is-open');
+            }
+            qa.addEventListener("click", acToggle);
+
+            // 現在日時を取得・フォームへ自動入力
+            function getNow() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const mon = now.getMonth() + 1;
+                const day = now.getDate();
+                const week = now.getDay();
+                const hour = now.getHours();
+                const min = now.getMinutes();
+                const sec = now.getSeconds();
+                const dayWeek = new Array("日", "月", "火", "水", "木", "金", "土");
+                const currentTime = year + "/" + mon + "/" + day + "(" + dayWeek[week] + ") " + hour + ":" + min + ":" + sec;
+                let date = document.querySelector('#date');
+                date.value = currentTime;
+            }
+
+            let name = document.querySelector('#name');
+            let mail = document.querySelector('#mail');
+            let content = document.querySelector('#content');
+            let errorName = document.querySelector('.error-name');
+            let errorMail = document.querySelector('.error-mail');
+            let errorContent = document.querySelector('.error-content');
+            let autoResId = document.querySelector('#autoResId');
+            // バリデーションチェック
+            function validationCheck(event) {
+                //通常の動作をキャンセル
+                event.preventDefault();
+
+                if (name.value === "") {
+                    errorName.innerHTML = "※ユーザー名を入力してください";
+                    errorName.style.color = "red";
+                } else {
+                    errorName.innerHTML = "";
+                }
+                if (mail.value === "") {
+                    errorMail.innerHTML = "※メールアドレスを入力してください";
+                    errorMail.style.color = "red";
+                } else {
+                    errorMail.innerHTML = "";
+                }
+                if (content.value === "") {
+                    errorContent.innerHTML = "※コメントを入力してください";
+                    errorContent.style.color = "red";
+                } else {
+                    errorContent.innerHTML = "";
+                }
+                if (errorName.innerHTML === "" && errorMail.innerHTML === "" && errorContent.innerHTML === "") {
+                    getNow();
+                    // resId自動入力
+                    if (targetThreadsRes.length !== 0) {
+                        autoResId.value = targetThreadsRes[targetThreadsRes.length - 1].resId + 1;
+                    } else if (targetThreadsRes.length === 0) {
+                        autoResId.value = 1;
+                    }
+                    const formEle = document.querySelector('#commentForm-vali'); //form要素
+                    formEle.submit();
+                }
+            }
+            if(favoThreads.length != 0){
+                const formEle = document.querySelector('#commentForm-vali'); //form要素
+                const submitButton = document.querySelector('.submitBtn'); //submitボタン
+                submitButton.addEventListener('click', validationCheck);
+
+                // コメント作成フォームの表示
+                const createComment = document.querySelector(".createComment");
+                function commentToggle() {
+                    formEle.classList.toggle("is-open");
+                    const createComment = this;
+                    createComment.classList.toggle('is-open');
+                }
+                createComment.addEventListener("click", commentToggle);
+            }
+
+            // ログイン状況の確認
+            function roginNameReflection() {
+                let roginPage = document.querySelector('.roginPage');
+                let rogoutPage = document.querySelector('.rogoutPage');
+                let favorite = document.querySelector('.favorite');
+                let registerUser = document.querySelector('.registerUser');
+                let favo = document.querySelector('.favo');
+
+                for (i = 0; i < rog.length; i++) {
+                    for (j = 0; j < users.length; j++) {
+                        if (rog[i].mail === users[j].mail) {
+                            roginPage.style.display = "none";
+                            registerUser.style.display = "none";
+                            rogoutPage.classList.remove("rogoutPage");
+                            favorite.classList.remove("favorite");
+                            // (お気に入り登録したスレッドがある場合)コメント作成フォームへ自動入力
+                            if(favoThreads.length != 0){
+                                name.value = users[j].name;
+                                mail.value = users[j].mail;
+                                // お気に入りリンク有効化
+                                favo.classList.remove("favo");
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            window.onload = roginNameReflection();
+
+            //掲示板検索
+            function searchTitle() {
+                if (inputTitle.value != "") {
+                    if (document.querySelector('.addTitles') != null) {
+                        while (add.firstChild) {
+                            add.removeChild(add.firstChild);
+                        }
+                    }
+                    for (i = 0; i < createdThreads.length; i++) {
+                        if (createdThreads[i].title.indexOf(inputTitle.value) > -1) {
+                            add.insertAdjacentHTML('beforeend', `
+                                    <div class="addTitles"> ${createdThreads[i].title} </div>
+                           `)
+                        }
+                    }
+                } else {
+                    while (add.firstChild) {
+                        add.removeChild(add.firstChild);
+                    }
+                }
+            }
+            let searchBtn = document.querySelector('.magnifyingGlass');
+            let inputTitle = document.querySelector('#inputTitle');
+            let add = document.querySelector(".add");
+            searchBtn.addEventListener('click', searchTitle);
+
+            // 並び替え(昇順)関数
+            function compareFunc(a, b) {
+                return a.threadId - b.threadId;
+            }
+
+        </script>
+    </body>
+</html>
