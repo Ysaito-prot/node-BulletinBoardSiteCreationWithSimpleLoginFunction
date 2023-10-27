@@ -83,6 +83,10 @@ button a {
 }
 
 .threadContentArea {
+  min-height: 260px;
+  padding-left: 0;
+}
+.threadContentAreaEdit {
   padding-left: 0;
 }
 
@@ -119,11 +123,34 @@ footer {
 
 .pageNation {
   padding: 40px;
+  margin-top: 20px;
   text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .threadTitle {
   margin-left: 20px;
+}
+/*-------------------------
+  ページネーション
+-------------------------*/
+.pagination {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+.pagination li {
+  display: inline-block;
+  width: 2em;
+}
+.prev {
+ margin-right: 30px;
+}
+
+.next {
+  margin-left: 30px;
 }
 
 /*-------------------------
@@ -304,9 +331,13 @@ button {
 }
 
 .searchIcon {
-  margin: 0 10px 10px 10px;
+  margin: 10px 10px 10px 10px;
   height: 20px;
-  /* align-items: center; */
+}
+.magnifyingGlass {
+  width: 20px;
+  height: 20px;
+  background: url(../image/magnifyingGlass.png) no-repeat center center / 20px 20px;
 }
 
 .addTitles {
@@ -407,6 +438,11 @@ button {
   height: 30px;
 }
 
+.deleteBtn {
+  color: #007bff;
+  background-color: #ccc;
+}
+
 /*-------------------------
   お気に入り一覧ページ
 -------------------------*/
@@ -417,6 +453,15 @@ button {
 .roginUserDisplay {
   margin: 30px 0;
   text-align: center;
+}
+.noContent {
+  height: 230px;
+}
+.underMenuFavo {
+  width: 450px;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 0 auto;
 }
 
 /*-------------------------

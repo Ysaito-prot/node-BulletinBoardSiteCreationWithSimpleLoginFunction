@@ -17,10 +17,15 @@
                 <label for="menu-btn-check" class="menu-btn"><span></span></label>
                 <!--ここからメニュー-->
                 <aside class="top-side">
-                    <div class="welcome">ようこそ<span class="roginName">ゲスト</span>さん</div>
+                    <div class="welcome">ようこそ<span class="roginName"><%= rog[0].name %></span>さん</div>
                     <ul>
                         <li><a href="/createThreadForm">新規スレッドを書く</a></li>
-                        <li class="favorite"><a href="/favoriteList">お気に入り一覧</a></li>
+                        <% if(favoThreads.findIndex(item => item.mail === rog[0].mail) != -1){ %>
+                            <% for(let i = 0; i < favoThreads.length; i++){ if(rog[0].name === favoThreads[i].name ){ %>
+                                <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[i].threadId %>">お気に入り一覧</a></li>
+                                <% break;}}} else { %>
+                                    <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/1">お気に入り一覧</a></li>
+                                    <% } %>
                         <li class="roginPage"><a href="/roginForm">ログイン</a></li>
                         <li class="rogoutPage"><a href="/rogout">ログアウト</a></li>
                         <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
@@ -31,7 +36,7 @@
                             <div class="searchInpt">
                                 <input id="inputTitle" type="text">
                                 <div class="searchIcon">
-                                    <img class="magnifyingGlass" src="../image/magnifyingGlass.png" alt="検索アイコン表示" width="20px" height="20px">
+                                    <div class="magnifyingGlass"></div>
                                 </div>
                             </div>
                             <div class="add"></div>
@@ -88,7 +93,6 @@
             let inputTitle = document.querySelector('#inputTitle');
             let add = document.querySelector(".add");
             searchBtn.addEventListener('click', searchTitle);
-
         </script>
     </body>
 </html>

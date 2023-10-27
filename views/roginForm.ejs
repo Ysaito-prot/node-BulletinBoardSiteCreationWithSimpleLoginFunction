@@ -29,7 +29,7 @@
                             <div class="searchInpt">
                                 <input id="inputTitle" type="text">
                                 <div class="searchIcon">
-                                    <img class="magnifyingGlass" src="../image/magnifyingGlass.png" alt="検索アイコン表示" width="20px" height="20px">
+                                    <div class="magnifyingGlass"></div>
                                 </div>
                             </div>
                             <div class="add"></div>
@@ -41,6 +41,10 @@
             <div class="formArea">
                 <h2 class="formTitle">ユーザーログイン</h2>
                 <form id="form-vali" action="/rogin" method="POST">
+                    <div class="hidden">
+                        <label for="name">ユーザー名</label><span class="errorMsg error-name"></span><br>
+                        <input type="text" id="name" name="name" required>
+                    </div>
                     <div>
                         <label for="mail">ID（メールアドレス）</label><span class="errorMsg error-mail"></span><br>
                         <input type="text" id="mail" name="mail" required>
@@ -60,7 +64,7 @@
         <script>
             let userInfo = JSON.parse('<%= JSON.stringify(userInfo) %>'.replace(/&#34;/g, '"'));
             let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
-
+            let name = document.querySelector('#name');
             let mail = document.querySelector('#mail');
             let password = document.querySelector('#password');
             let errorMail = document.querySelector('.error-mail');
@@ -92,6 +96,8 @@
                         } else {
                             errorMail.innerHTML = "";
                             errorPassword.innerHTML = "";
+                            // ユーザー名自動入力
+                            name.value = userInfo[i].name;
                             break;
                         }
                     }
@@ -100,7 +106,6 @@
                 // 全てのエラーがなければデータ送信
                 if (errorMail.innerHTML === "" && errorPassword.innerHTML === "") {
                     formEle.submit();
-                    // console.log('データ送信')
                 }
             }
             const formEle = document.querySelector('#form-vali'); //form要素

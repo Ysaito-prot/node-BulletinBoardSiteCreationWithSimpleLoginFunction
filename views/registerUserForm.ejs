@@ -17,10 +17,15 @@
                 <label for="menu-btn-check" class="menu-btn"><span></span></label>
                 <!--ここからメニュー-->
                 <aside class="top-side">
-                    <div class="welcome">ようこそ<span class="roginName">ゲスト</span>さん</div>
+                    <div class="welcome">ようこそ<span class="roginName"><%= rog[0].name %></span>さん</div>
                     <ul>
                         <li><a href="/createThreadForm">新規スレッドを書く</a></li>
-                        <li class="favorite"><a href="/favoriteList">お気に入り一覧</a></li>
+                        <% if(favoThreads.findIndex(item => item.mail === rog[0].mail) != -1){ %>
+                            <% for(let i = 0; i < favoThreads.length; i++){ if(rog[0].name === favoThreads[i].name ){ %>
+                                <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[i].threadId %>">お気に入り一覧</a></li>
+                                <% break;}}} else { %>
+                                    <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/1">お気に入り一覧</a></li>
+                                    <% } %>
                         <li class="roginPage"><a href="/roginForm">ログイン</a></li>
                         <li class="rogoutPage"><a href="/rogout">ログアウト</a></li>
                         <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
@@ -31,7 +36,7 @@
                             <div class="searchInpt">
                                 <input id="inputTitle" type="text">
                                 <div class="searchIcon">
-                                    <img class="magnifyingGlass" src="../image/magnifyingGlass.png" alt="検索アイコン表示" width="20px" height="20px">
+                                    <div class="magnifyingGlass"></div>
                                 </div>
                             </div>
                             <div class="add"></div>
@@ -55,10 +60,6 @@
                         <label for="password">パスワード</label><span class="errorMsg error-password"></span><br>
                         <input type="text" id="password" name="password" maxlength="20" required>
                     </div>
-                    <div class="hidden"> <!--非表示-->
-                        <label for="rogin">ログイン状況</label><br>
-                        <input type="text" id="rogin" name="rogin" value="rogout">
-                    </div>
                     <div class="formBtn"><button class="submitBtn" type="submit">登録</button></div>
                 </form>
             </div>
@@ -71,7 +72,6 @@
             let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
             let rog = JSON.parse('<%= JSON.stringify(rog) %>'.replace(/&#34;/g, '"'));
             let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
-
             let name = document.querySelector('#name');
             let mail = document.querySelector('#mail');
             let password = document.querySelector('#password');
@@ -143,7 +143,6 @@
 
             // ログイン状況の確認
             function roginNameReflection() {
-                let roginName = document.querySelector('.roginName');
                 let roginPage = document.querySelector('.roginPage');
                 let rogoutPage = document.querySelector('.rogoutPage');
                 let favorite = document.querySelector('.favorite');
@@ -152,7 +151,6 @@
                 for (i = 0; i < rog.length; i++) {
                     for (j = 0; j < users.length; j++) {
                         if (rog[i].mail === users[j].mail) {
-                            roginName.innerHTML = users[j].name;
                             roginPage.style.display = "none";
                             registerUser.style.display = "none";
                             rogoutPage.classList.remove("rogoutPage");
@@ -188,7 +186,6 @@
             let inputTitle = document.querySelector('#inputTitle');
             let add = document.querySelector(".add");
             searchBtn.addEventListener('click', searchTitle);
-
         </script>
     </body>
 </html>

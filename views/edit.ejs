@@ -17,59 +17,66 @@
                 <label for="menu-btn-check" class="menu-btn"><span></span></label>
                 <!--ここからメニュー-->
                 <aside class="top-side">
-                    <div class="welcome">ようこそ<span class="roginName">ゲスト</span>さん</div>
+                    <div class="welcome">ようこそ<span class="roginName">
+                            <%= rog[0].name %>
+                        </span>さん</div>
                     <ul>
                         <li><a href="/createThreadForm">新規スレッドを書く</a></li>
-                        <li class="favorite"><a href="/favoriteList">お気に入り一覧</a></li>
-                        <li class="roginPage"><a href="/roginForm">ログイン</a></li>
-                        <li class="rogoutPage"><a href="/rogout">ログアウト</a></li>
-                        <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
-                        <li>
-                            <div class="qa__head js-ac">掲示板検索</div>
-                        </li>
-                        <li>
-                            <div class="searchInpt">
-                                <input id="inputTitle" type="text">
-                                <div class="searchIcon">
-                                    <img class="magnifyingGlass" src="../image/magnifyingGlass.png" alt="検索アイコン表示" width="20px" height="20px">
-                                </div>
-                            </div>
-                            <div class="add"></div>
-                        </li>
+                        <% if(favoThreads.findIndex(item=> item.mail === rog[0].mail) != -1){ %> <% for(let i=0; i < favoThreads.length; i++){ if(rog[0].name===favoThreads[i].name ){ %>
+                                <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/<%= favoThreads[i].threadId %>">お気に入り一覧</a></li>
+                                <% break;}}} else { %>
+                                    <li class="favorite"><a href="/favoriteList/<%= rog[0].name %>/1">お気に入り一覧</a></li>
+                                    <% } %>
+                                        <li class="roginPage"><a href="/roginForm">ログイン</a></li>
+                                        <li class="rogoutPage"><a href="/rogout">ログアウト</a></li>
+                                        <li class="registerUser"><a href="/registerUserForm">新規ユーザー登録</a></li>
+                                        <li>
+                                            <div class="qa__head js-ac">掲示板検索</div>
+                                        </li>
+                                        <li>
+                                            <div class="searchInpt">
+                                                <input id="inputTitle" type="text">
+                                                <div class="searchIcon">
+                                                    <div class="magnifyingGlass"></div>
+                                                </div>
+                                            </div>
+                                            <div class="add"></div>
+                                        </li>
                     </ul>
                 </aside>
                 <!--ここまでメニュー-->
             </div>
             <div class="editArea">
-                <ul class="threadContentArea">
-                        <li class="listItem">
-                            <div class="userInfo">
-                                <span class="userName">
-                                    <%= user[0].id %> 名前：<%= user[0].name %>
-                                </span>
-                                <span class="date">：<%= user[0].date %> </span>
-                                <span class="edit"><a href="/edit/<%= user[0].id %>">編集</a></span>
-                            </div>
-                            <div class="content">
-                                <%= user[0].content %>
-                            </div>
-                        </li>
+                <ul class="threadContentAreaEdit">
+                    <li class="listItem">
+                        <div class="userInfo">
+                            <span class="userName">
+                                <%= user[0].resId %> 名前：<%= user[0].name %>
+                            </span>
+                            <span class="date">：<%= user[0].date %> </span>
+                            <span class="edit"><a href="/edit/<%= user[0].id %>">編集</a></span>
+                        </div>
+                        <div class="content">
+                            <%= user[0].content %>
+                        </div>
+                    </li>
                 </ul>
-                <form class="editForm" action="/update/<%= user[0].id %>" method="POST" name="questionnaire">
+                <form id="editForm-vali" action="?" method="POST" name="questionnaire">
                     <div class="nameEmail">
                         <div class="inputName">
-                            <div class="item"><label for="name">名前</label> </div>
-                            <input id="name" type="text" name="name" pattern="^[ぁ-ん一-龥々a-zA-Z\-]+$" value="<%= user[0].name %>" required>
+                            <div class="item"><label for="name">名前</label><span class="errorMsg error-name"></span> </div>
+                            <input id="name" type="text" name="name" pattern="^[ぁ-ん一-龥々a-zA-Z\-]+$" value="<%= user[0].name %>">
                         </div>
                         <div class="inputEmail">
-                            <div class="item"><label for="mail">email</label> </div>
-                            <input id="mail" type="text" name="mail" value="<%= user[0].mail %>" required>
+                            <div class="item"><label for="mail">email</label><span class="errorMsg error-mail"></span> </div>
+                            <input id="mail" type="text" name="mail" value="<%= user[0].mail %>">
                         </div>
                     </div>
-                    <textarea id="content" name="content" cols="135" rows="6" required><%= user[0].content %></textarea>
+                    <div class="error-content"></div>
+                    <textarea id="content" name="content" cols="135" rows="6"><%= user[0].content %></textarea>
                     <div class="underSet">
-                        <div class="deleteComment"><a href="/deleteComment/<%= user[0].id %>">投稿を削除する</a></div>
-                        <div class="writeBtn"><button type="submit" onclick="validationCheck();">書き込む</button></div>
+                        <div class="deleteComment"><button class="deleteBtn" type="submit">投稿を削除する</button></div>
+                        <div class="writeBtn"><button class="submitBtn" type="submit">編集</button></div>
                     </div>
                 </form>
             </div>
@@ -78,12 +85,14 @@
             <div class="footerText">copy write</div>
         </footer>
         <script>
+            let user = JSON.parse('<%= JSON.stringify(user) %>'.replace(/&#34;/g, '"'));
             let users = JSON.parse('<%= JSON.stringify(users) %>'.replace(/&#34;/g, '"'));
             let rog = JSON.parse('<%= JSON.stringify(rog) %>'.replace(/&#34;/g, '"'));
             let createdThreads = JSON.parse('<%= JSON.stringify(createdThreads) %>'.replace(/&#34;/g, '"'));
 
-            console.log(users)
-            console.log(rog)
+            // 遷移元のURLを取得する
+            const ref = document.referrer;
+            let ret = ref.replace("http://localhost:3000/", "");
 
             // ハンバーガーメニュー内検索ボックスの表示
             const qa = document.querySelector(".js-ac");
@@ -95,18 +104,106 @@
             }
             qa.addEventListener("click", acToggle);
 
+            let name = document.querySelector('#name');
+            let mail = document.querySelector('#mail');
+            let content = document.querySelector('#content');
+            let errorName = document.querySelector('.error-name');
+            let errorMail = document.querySelector('.error-mail');
+            let errorContent = document.querySelector('.error-content');
+            // バリデーションチェック
+            function validationCheckEdi(event) {
+                //通常の動作をキャンセル
+                event.preventDefault();
+
+                if (name.value === "") {
+                    errorName.innerHTML = "※ユーザー名を入力してください";
+                    errorName.style.color = "red";
+                } else {
+                    errorName.innerHTML = "";
+                }
+                if (mail.value === "") {
+                    errorMail.innerHTML = "※メールアドレスを入力してください";
+                    errorMail.style.color = "red";
+                } else {
+                    errorMail.innerHTML = "";
+                }
+                if (content.value === "") {
+                    errorContent.innerHTML = "※コメントを入力してください";
+                    errorContent.style.color = "red";
+                } else {
+                    errorContent.innerHTML = "";
+                }
+
+                if (name.value !== "" && mail.value !== "" && content.value !== "") {
+                    if (name.value !== user[0].name) {
+                        errorName.innerHTML = "※投稿時のユーザー名と一致しません";
+                        errorName.style.color = "red";
+                    } else {
+                        errorName.innerHTML = "";
+                    }
+                    if (mail.value !== user[0].mail) {
+                        errorMail.innerHTML = "※投稿時のアドレスと一致しません";
+                        errorMail.style.color = "red";
+                    } else {
+                        errorMail.innerHTML = "";
+                    }
+                }
+                if (errorName.innerHTML === "" && errorMail.innerHTML === "" && errorContent.innerHTML === "") {
+                    formEle.setAttribute("action", '/update/<%= user[0].id %>/'+ ret);
+                    formEle.submit();
+                }
+            }
+            function validationCheckDel(event) {
+                //通常の動作をキャンセル
+                event.preventDefault();
+
+                if (mail.value === "") {
+                    errorMail.innerHTML = "※メールアドレスを入力してください";
+                    errorMail.style.color = "red";
+                } else {
+                    errorMail.innerHTML = "";
+                }
+
+                if (mail.value !== "") {
+                    if (mail.value !== user[0].mail) {
+                        errorMail.innerHTML = "※投稿時のアドレスと一致しません";
+                        errorMail.style.color = "red";
+                    } else {
+                        errorMail.innerHTML = "";
+                    }
+                }
+                if (errorMail.innerHTML === "") {
+                    checkDelete();
+                }
+            }
+            let formEle = document.querySelector('#editForm-vali'); //form要素
+            const submitButton = document.querySelector('.submitBtn'); //submitボタン
+            submitButton.addEventListener('click', validationCheckEdi);
+            const deleteButton = document.querySelector('.deleteBtn'); //submitボタン
+            deleteButton.addEventListener('click', validationCheckDel);
+
+            // 本当に削除するか再確認
+            function checkDelete() {
+                if (confirm('削除しますか？')) {
+                    formEle.setAttribute("action", '/deleteComment/<%= user[0].id %>/'+ ret);
+                    formEle.submit();
+                    return true;
+                } else {
+                    alert('キャンセルされました');
+                    return false;
+                }
+            }
+
             // ログイン状況の確認
             function roginNameReflection() {
-                let roginName = document.querySelector('.roginName');
                 let roginPage = document.querySelector('.roginPage');
                 let rogoutPage = document.querySelector('.rogoutPage');
                 let favorite = document.querySelector('.favorite');
                 let registerUser = document.querySelector('.registerUser');
-                
+
                 for (i = 0; i < rog.length; i++) {
                     for (j = 0; j < users.length; j++) {
                         if (rog[i].mail === users[j].mail) {
-                            roginName.innerHTML = users[j].name;
                             roginPage.style.display = "none";
                             registerUser.style.display = "none";
                             rogoutPage.classList.remove("rogoutPage");
@@ -142,7 +239,6 @@
             let inputTitle = document.querySelector('#inputTitle');
             let add = document.querySelector(".add");
             searchBtn.addEventListener('click', searchTitle);
-
         </script>
     </body>
 </html>
